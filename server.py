@@ -5,6 +5,7 @@ the exercise!
 
 
 import random
+import requests
 
 from flask import Flask, request, render_template, jsonify
 
@@ -68,6 +69,13 @@ def order_melons():
 
     return jsonify({'code': result_code, 'msg': result_text})
 
+
+@app.route('/dog-pic')
+def get_dog_pic():
+    """Return an image from the dog API: https://dog.ceo/dog-api/"""
+    res = requests.get('https://dog.ceo/api/breeds/image/random')
+    img_data = res.json() 
+    return img_data['message']
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")

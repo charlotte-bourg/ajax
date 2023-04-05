@@ -55,3 +55,20 @@ function orderMelons(evt) {
 }
 
 document.querySelector('#order-form').addEventListener('submit', orderMelons);
+
+
+function getDogPic(){
+  fetch('/dog-pic')
+    .then((response) => response.text())
+    .then((responseURL) => {
+      const dogDiv = document.querySelector('#dog-image'); 
+      if (dogDiv.innerHTML.includes('api-img')){
+        document.querySelector('#api-img').src = `${responseURL}`
+      }
+      else{
+        dogDiv.insertAdjacentHTML('beforeend',`<br><img id = 'api-img' src = "${responseURL}" width = 500>`);
+      }
+    });
+}
+
+document.querySelector('#get-dog-image').addEventListener('click', getDogPic);
