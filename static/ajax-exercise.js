@@ -2,8 +2,12 @@
 
 // PART 1: SHOW A FORTUNE
 
-function showFortune(evt) {
-  // TODO: get the fortune and show it in the #fortune-text div
+function showFortune() { // why does this work (not reload page) without evt.preventDefault(); 
+  fetch('/fortune') // we don't need to prevent default because there's no form attached :)
+    .then((response) => response.text())
+    .then((fortune) => {
+      document.querySelector('#fortune-text').innerHTML = fortune; 
+    });
 }
 
 document.querySelector('#get-fortune-button').addEventListener('click', showFortune);
@@ -15,8 +19,11 @@ function showWeather(evt) {
 
   const url = '/weather.json';
   const zipcode = document.querySelector('#zipcode-field').value;
-
-  // TODO: request weather with that URL and show the forecast in #weather-info
+  fetch(`${url}?zipcode=${zipcode}`)
+    .then((response) => response.json())
+    .then((responseData) => {
+      document.querySelector('#weather-info').innerHTML = responseData['forecast'];
+    });
 }
 
 document.querySelector('#weather-form').addEventListener('submit', showWeather);
@@ -25,8 +32,26 @@ document.querySelector('#weather-form').addEventListener('submit', showWeather);
 
 function orderMelons(evt) {
   evt.preventDefault();
-
-  // TODO: show the result message after your form
-  // TODO: if the result code is ERROR, make it show up in red (see our CSS!)
+  const orderStatus = document.querySelector('#order-status');
+  orderStatus.classList.remove('order-error');
+  const formInputs = {
+    melon_type: document.querySelector('#melon-type-field').value,
+    qty: document.querySelector('#qty-field').value,
+  }
+  fetch('/order-melons.json', {
+    method: 'POST',
+    body: JSON.stringify(formInputs), 
+    headers: {
+      'Content-Type': 'application/json',
+    }, //required but don't really need to worry about what this does for the purpose of Hackbright
+  })
+    .then((response) => response.json())
+    .then((responseJson) => {
+      orderStatus.innerHTML = responseJson['msg'];
+      if (responseJson['code'] === 'ERROR'){
+        orderStatus.classList.add('order-error');
+      }
+    });
 }
+
 document.querySelector('#order-form').addEventListener('submit', orderMelons);
